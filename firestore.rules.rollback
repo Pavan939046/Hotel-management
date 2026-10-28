@@ -1,0 +1,90 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function hasVerifiedEmail() {
+      return signedIn()
+        && request.auth.token.email_verified == true
+        && request.auth.token.email is string;
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.accessStatus == 'active';
+    }
+
+    function isActiveSupervisor() {
+      return hasVerifiedEmail()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'supervisor'
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.accessStatus == 'active'
+        && exists(/databases/$(database)/documents/supervisorAccess/$(get(/databases/$(database)/documents/users/$(request.auth.uid)).data.email))
+        && get(/databases/$(database)/documents/supervisorAccess/$(get(/databases/$(database)/documents/users/$(request.auth.uid)).data.email)).data.status == 'active'
+        && (
+          !('role' in get(/databases/$(database)/documents/supervisorAccess/$(get(/databases/$(database)/documents/users/$(request.auth.uid)).data.email)).data)
+          || get(/databases/$(database)/documents/supervisorAccess/$(get(/databases/$(database)/documents/users/$(request.auth.uid)).data.email)).data.role == 'supervisor'
+        );
+    }
+
+    function isActiveManager() {
+      return hasVerifiedEmail()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'manager'
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.accessStatus == 'active'
+        && exists(/databases/$(database)/documents/supervisorAccess/$(get(/databases/$(database)/documents/users/$(request.auth.uid)).data.email))
+        && get(/databases/$(database)/documents/supervisorAccess/$(get(/databases/$(database)/documents/users/$(request.auth.uid)).data.email)).data.status == 'active'
+        && get(/databases/$(database)/documents/supervisorAccess/$(get(/databases/$(database)/documents/users/$(request.auth.uid)).data.email)).data.role == 'manager';
+    }
+
+    function isStaff() {
+      return isAdmin() || isActiveSupervisor() || isActiveManager();
+    }
+
+    match /menuItems/{itemId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /tables/{tableId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /orders/{orderId} {
+      allow get: if signedIn()
+        && (resource.data.customerUid == request.auth.uid || isStaff());
+      allow list: if isStaff();
+      allow create, update, delete: if false;
+    }
+
+    match /orderRequests/{requestId} {
+      allow read, write: if false;
+    }
+
+    match /visits/{visitId} {
+      allow read: if isAdmin() || isActiveManager();
+      allow write: if false;
+    }
+
+    match /users/{userId} {
+      allow get: if signedIn() && (request.auth.uid == userId || isAdmin());
+      allow list: if isAdmin();
+      allow write: if false;
+    }
+
+    match /supervisorAccess/{email} {
+      allow get: if isAdmin();
+      allow list: if isAdmin();
+      allow write: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

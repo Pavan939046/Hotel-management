@@ -1,0 +1,57 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "menuItems": {
+      ".read": true,
+      "$itemId": {
+        ".write": "auth != null && auth.token.email_verified == true && (auth.token.email == 'kathipavankumarreddy@gmail.com' || root.child('staffAccessByUid').child(auth.uid).child('role').val() == 'manager' && root.child('staffAccessByUid').child(auth.uid).child('status').val() == 'active' && root.child('staffAccessByUid').child(auth.uid).child('email').val() == auth.token.email)"
+      }
+    },
+    "tables": {
+      ".read": true,
+      "$tableId": {
+        ".write": "auth != null && auth.token.email_verified == true && (auth.token.email == 'kathipavankumarreddy@gmail.com' || root.child('staffAccessByUid').child(auth.uid).child('role').val() == 'manager' && root.child('staffAccessByUid').child(auth.uid).child('status').val() == 'active' && root.child('staffAccessByUid').child(auth.uid).child('email').val() == auth.token.email)"
+      }
+    },
+    "orders": {
+      ".read": "auth != null && auth.token.email_verified == true && (auth.token.email == 'kathipavankumarreddy@gmail.com' || root.child('staffAccessByUid').child(auth.uid).child('status').val() == 'active' && root.child('staffAccessByUid').child(auth.uid).child('email').val() == auth.token.email)",
+      "$orderId": {
+        ".read": "auth != null && (data.child('customerUid').val() == auth.uid || auth.token.email_verified == true && (auth.token.email == 'kathipavankumarreddy@gmail.com' || root.child('staffAccessByUid').child(auth.uid).child('status').val() == 'active' && root.child('staffAccessByUid').child(auth.uid).child('email').val() == auth.token.email))",
+        ".write": false
+      }
+    },
+    "orderRequests": {
+      ".read": false,
+      ".write": false
+    },
+    "visits": {
+      ".read": "auth != null && auth.token.email_verified == true && (auth.token.email == 'kathipavankumarreddy@gmail.com' || root.child('staffAccessByUid').child(auth.uid).child('role').val() == 'manager' && root.child('staffAccessByUid').child(auth.uid).child('status').val() == 'active' && root.child('staffAccessByUid').child(auth.uid).child('email').val() == auth.token.email)",
+      ".write": false
+    },
+    "users": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid == $uid || auth.token.email == 'kathipavankumarreddy@gmail.com')",
+        ".write": false
+      }
+    },
+    "adminAccess": {
+      ".read": "auth != null && auth.token.email_verified == true && auth.token.email == 'kathipavankumarreddy@gmail.com'",
+      ".write": false
+    },
+    "supervisorAccess": {
+      ".read": "auth != null && auth.token.email_verified == true && auth.token.email == 'kathipavankumarreddy@gmail.com'",
+      "$staffKey": {
+        ".read": "auth != null && auth.token.email_verified == true && (auth.token.email == 'kathipavankumarreddy@gmail.com' || data.child('email').val() == auth.token.email)",
+        ".write": "auth != null && auth.token.email_verified == true && auth.token.email == 'kathipavankumarreddy@gmail.com'",
+        ".validate": "newData.hasChildren(['email', 'role', 'status']) && newData.child('email').isString() && newData.child('role').val().matches(/^(supervisor|manager)$/) && newData.child('status').val().matches(/^(active|revoked)$/)"
+      }
+    },
+    "staffAccessByUid": {
+      "$uid": {
+        ".read": "auth != null && auth.token.email_verified == true && (auth.token.email == 'kathipavankumarreddy@gmail.com' || auth.uid == $uid && data.child('email').val() == auth.token.email)",
+        ".write": false
+      }
+    }
+  }
+}

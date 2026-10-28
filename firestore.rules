@@ -1,0 +1,106 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function hasVerifiedEmail() {
+      return signedIn()
+        && request.auth.token.email_verified == true
+        && request.auth.token.email is string;
+    }
+
+    function isAdmin() {
+      return hasVerifiedEmail()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.accessStatus == 'active'
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.email == request.auth.token.email;
+    }
+
+    function isActiveSupervisor() {
+      return hasVerifiedEmail()
+        && exists(/databases/$(database)/documents/supervisorAccess/$(request.auth.token.email))
+        && get(/databases/$(database)/documents/supervisorAccess/$(request.auth.token.email)).data.email == request.auth.token.email
+        && get(/databases/$(database)/documents/supervisorAccess/$(request.auth.token.email)).data.status == 'active'
+        && (
+          !('role' in get(/databases/$(database)/documents/supervisorAccess/$(request.auth.token.email)).data)
+          || get(/databases/$(database)/documents/supervisorAccess/$(request.auth.token.email)).data.role == 'supervisor'
+        );
+    }
+
+    function isActiveManager() {
+      return hasVerifiedEmail()
+        && exists(/databases/$(database)/documents/supervisorAccess/$(request.auth.token.email))
+        && get(/databases/$(database)/documents/supervisorAccess/$(request.auth.token.email)).data.email == request.auth.token.email
+        && get(/databases/$(database)/documents/supervisorAccess/$(request.auth.token.email)).data.status == 'active'
+        && get(/databases/$(database)/documents/supervisorAccess/$(request.auth.token.email)).data.role == 'manager';
+    }
+
+    function isStaff() {
+      return isAdmin() || isActiveSupervisor() || isActiveManager();
+    }
+
+    match /menuItems/{itemId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /tables/{tableId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /orders/{orderId} {
+      allow get: if signedIn()
+        && (resource.data.customerUid == request.auth.uid || isStaff());
+      allow list: if isStaff();
+      allow create, update, delete: if false;
+    }
+
+    match /orderRequests/{requestId} {
+      allow read, write: if false;
+    }
+
+    match /visits/{visitId} {
+      allow read: if isAdmin() || isActiveManager();
+      allow write: if false;
+    }
+
+    match /users/{userId} {
+      allow get: if signedIn() && (request.auth.uid == userId || isAdmin());
+      allow list: if isAdmin();
+      allow write: if false;
+    }
+
+    match /supervisorAccess/{email} {
+      allow get: if isAdmin() || (hasVerifiedEmail() && email == request.auth.token.email);
+      allow list: if isAdmin();
+      allow create: if isAdmin()
+        && request.resource.data.keys().hasAll(['email', 'role', 'status', 'createdAt', 'updatedAt'])
+        && request.resource.data.keys().hasOnly(['email', 'role', 'status', 'createdAt', 'updatedAt'])
+        && request.resource.data.email == email
+        && email.matches('^[a-z0-9._+-]+@gmail[.]com$')
+        && request.resource.data.role in ['supervisor', 'manager']
+        && request.resource.data.status == 'active'
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+      allow update: if isAdmin()
+        && request.resource.data.keys().hasAll(['email', 'role', 'status', 'createdAt', 'updatedAt'])
+        && request.resource.data.keys().hasOnly(['email', 'role', 'status', 'createdAt', 'updatedAt'])
+        && request.resource.data.email == email
+        && request.resource.data.email == resource.data.email
+        && request.resource.data.role in ['supervisor', 'manager']
+        && request.resource.data.status in ['active', 'revoked']
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['role', 'status', 'updatedAt']);
+      allow delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "olive-ember-qr-ordering",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:lan": "vite --mode emulator --host 0.0.0.0 --port 5174 --strictPort",
+    "dev:production": "vite --mode production --host 127.0.0.1 --port 5175 --strictPort",
+    "backend:lan": "firebase emulators:start --only auth,database,functions --project demo-hotel-mangment-system-b4aa8",
+    "build": "vite build",
+    "deploy": "npm run build && firebase deploy --only database,hosting",
+    "deploy:trusted-backend": "firebase deploy --only functions --project hotel-mangment-system-b4aa8",
+    "seed": "npm --prefix functions run seed"
+  },
+  "dependencies": {
+    "firebase": "^12.4.0",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "firebase-tools": "^15.34.0",
+    "vite": "^7.1.10"
+  },
+  "overrides": {
+    "@grpc/grpc-js": "^1.14.6",
+    "chokidar": "^4.0.3"
+  }
+}

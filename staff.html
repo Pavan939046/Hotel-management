@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f6f5f0" />
+    <title>Staff sign in | Olive &amp; Ember</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="premium.css" />
+    <script type="module" src="/staff.js"></script>
+  </head>
+  <body class="staff-body">
+    <section class="staff-login-screen" id="staff-login">
+      <a class="brand login-brand" href="/" aria-label="Olive and Ember menu">
+        <span class="brand-mark" aria-hidden="true">O<span>.</span></span>
+        <span class="brand-name">olive <span>&amp;</span> ember</span>
+      </a>
+      <div class="login-card">
+        <p class="eyebrow">THE OLIVE &amp; EMBER TEAM</p>
+        <h1>Welcome back.</h1>
+        <p>Sign in with your authorized Google account to continue to your staff workspace.</p>
+        <button class="google-button" id="google-sign-in" type="button">
+          <span class="google-mark" aria-hidden="true">G</span>
+          Continue with Google
+          <span aria-hidden="true">→</span>
+        </button>
+        <p class="staff-message" id="staff-message" role="status" aria-live="polite">
+          You are not signed in yet. Select “Continue with Google” and choose the configured Admin account: kathipavankumarreddy@gmail.com.
+        </p>
+        <a class="back-to-menu" href="/">Back to the restaurant</a>
+      </div>
+      <p class="login-footnote">Private workspace · Access is verified securely</p>
+    </section>
+
+    <div class="workspace" id="staff-dashboard" hidden>
+      <aside class="sidebar">
+        <a class="brand sidebar-brand" href="/" aria-label="Olive and Ember">
+          <span class="brand-mark" aria-hidden="true">O<span>.</span></span>
+          <span class="brand-name">olive <span>&amp;</span> ember</span>
+        </a>
+        <div class="workspace-label">WORKSPACE</div>
+        <nav class="sidebar-nav" id="dashboard-nav" aria-label="Dashboard navigation"></nav>
+        <div class="sidebar-bottom">
+          <div class="sidebar-user">
+            <span class="user-avatar" id="user-avatar">O</span>
+            <span><strong id="sidebar-name">Staff</strong><small id="sidebar-role">Team member</small></span>
+          </div>
+          <button class="sidebar-logout" id="sign-out-button" type="button">Sign out <span aria-hidden="true">↗</span></button>
+        </div>
+      </aside>
+
+      <main class="workspace-main">
+        <header class="workspace-topbar">
+          <div>
+            <p class="eyebrow" id="dashboard-kicker">OVERVIEW</p>
+            <h1 id="dashboard-title">Good morning</h1>
+          </div>
+          <div class="topbar-right">
+            <span class="live-indicator"><span></span> Live updates</span>
+            <button class="sound-toggle" id="sound-toggle" type="button" aria-pressed="false">Enable order sound</button>
+            <span class="workspace-date" id="workspace-date"></span>
+          </div>
+        </header>
+
+        <section class="dashboard-view" id="view-overview" data-view="overview">
+          <div class="welcome-strip">
+            <div>
+              <span class="eyebrow">YOUR SERVICE AT A GLANCE</span>
+              <h2>Good service starts here.</h2>
+              <p>Orders and table activity update as they happen.</p>
+            </div>
+            <div class="welcome-emblem" aria-hidden="true">O<span>.</span></div>
+          </div>
+          <div class="metrics-grid" id="metrics-grid"></div>
+          <section class="dashboard-panel">
+            <div class="panel-heading">
+              <div><span class="eyebrow">DINING ROOM</span><h2>Table overview</h2></div>
+              <button class="quiet-button" data-go-view="tables" type="button">View all tables <span aria-hidden="true">→</span></button>
+            </div>
+            <div class="table-grid" id="overview-table-grid"></div>
+          </section>
+          <section class="dashboard-panel">
+            <div class="panel-heading">
+              <div><span class="eyebrow">JUST ARRIVED</span><h2>Latest orders</h2></div>
+              <button class="quiet-button" data-go-view="live-orders" type="button">All live orders <span aria-hidden="true">→</span></button>
+            </div>
+            <div class="orders-list compact-orders" id="overview-orders"></div>
+          </section>
+        </section>
+
+        <section class="dashboard-view" id="view-live-orders" data-view="live-orders" hidden>
+          <div class="section-intro"><span class="eyebrow">KITCHEN &amp; SERVICE</span><h2>Live orders</h2><p>Move each table through service. Changes sync instantly across staff devices.</p></div>
+          <div class="order-filter-row">
+            <label for="live-order-filter">Show orders</label>
+            <select id="live-order-filter">
+              <option value="active">Active orders</option>
+              <option value="all">All orders</option>
+              <option value="new">New</option>
+              <option value="preparing">Preparing</option>
+              <option value="ready">Ready</option>
+              <option value="delivered">Delivered</option>
+            </select>
+            <span class="order-alert" id="order-alert" role="status" aria-live="polite"></span>
+          </div>
+          <div class="orders-list" id="live-orders"></div>
+          <p class="empty-dashboard" id="orders-message" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="dashboard-view" id="view-tables" data-view="tables" hidden>
+          <div class="section-intro"><span class="eyebrow">DINING ROOM</span><h2>Table management</h2><p>View table availability, open orders, and table-specific QR links.</p></div>
+          <div class="table-grid table-grid-large" id="table-grid"></div>
+          <section class="dashboard-panel manager-access" id="table-management-panel">
+            <div class="panel-heading">
+              <div><span class="eyebrow">TABLE QR CODES</span><h2>Print for your dining room</h2></div>
+              <div class="table-management-actions">
+                <button class="quiet-button" id="print-all-qrs" type="button">Print all QR codes</button>
+                <button class="primary-button" id="add-table-button" type="button">Add table <span aria-hidden="true">+</span></button>
+              </div>
+            </div>
+            <p class="panel-copy">Each code opens the menu for that table. Scanning never places an order.</p>
+            <div class="qr-grid" id="table-qr-grid"></div>
+            <p class="staff-message" id="table-message" role="status" aria-live="polite"></p>
+          </section>
+        </section>
+
+        <section class="dashboard-view" id="view-menu" data-view="menu" hidden>
+          <div class="section-intro"><span class="eyebrow">THE RESTAURANT MENU</span><h2>Menu management</h2><p>Update dishes and availability. Customers see changes in real time.</p></div>
+          <section class="dashboard-panel manager-access">
+            <div class="panel-heading"><div><span class="eyebrow">ADD A DISH</span><h2>Menu item details</h2></div></div>
+            <form id="menu-form" class="menu-form">
+              <label>Dish name<input id="menu-name" maxlength="80" required /></label>
+              <label>Category<select id="menu-category" required>
+                <option>Breakfast</option><option>Starters</option><option>Vegetarian</option><option>Non-Vegetarian</option><option>Biryani and Rice</option><option>Indian Breads</option><option>Beverages</option><option>Desserts</option>
+              </select></label>
+              <label>Price (₹)<input id="menu-price" type="number" min="0.01" step="0.01" required /></label>
+              <label>Dietary type<select id="menu-vegetarian"><option value="true">Vegetarian</option><option value="false">Non-vegetarian</option></select></label>
+              <label class="menu-description-field">Description<textarea id="menu-description" maxlength="300" required></textarea></label>
+              <label class="menu-image-field">Image URL<input id="menu-image" type="url" placeholder="https://…" required /></label>
+              <button class="primary-button" id="save-menu-button" type="submit">Add menu item</button>
+            </form>
+            <p class="staff-message" id="menu-message" role="status" aria-live="polite"></p>
+            <div class="table-scroll"><table class="staff-table"><thead><tr><th>Dish</th><th>Category</th><th>Price</th><th>Availability</th><th>Action</th></tr></thead><tbody id="menu-list"></tbody></table></div>
+          </section>
+        </section>
+
+        <section class="dashboard-view" id="view-history" data-view="history" hidden>
+          <div class="section-intro"><span class="eyebrow">ORDER RECORD</span><h2>Order history</h2><p>Completed and declined orders remain here for reference.</p></div>
+          <div class="order-filter-row"><label for="history-search">Search by order or table</label><input id="history-search" type="search" placeholder="e.g. Table 4 or order ID" /></div>
+          <div class="orders-list" id="history-orders"></div>
+          <p class="empty-dashboard" id="history-message" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="dashboard-view" id="view-reports" data-view="reports" hidden>
+          <div class="section-intro"><span class="eyebrow">TODAY AT OLIVE &amp; EMBER</span><h2>Order reports</h2><p>Order totals include GST; this report does not track or process payments.</p></div>
+          <div class="metrics-grid" id="report-metrics"></div>
+          <section class="dashboard-panel"><div class="panel-heading"><div><span class="eyebrow">DAILY SUMMARY</span><h2>Today’s service</h2></div></div><div class="report-summary" id="report-summary"></div></section>
+        </section>
+
+        <section class="dashboard-view" id="view-supervisors" data-view="supervisors" hidden>
+          <div class="section-intro"><span class="eyebrow">STAFF PERMISSIONS</span><h2>Supervisor &amp; Manager access</h2><p>Only the configured administrator can grant or revoke staff access.</p></div>
+          <section class="dashboard-panel admin-only">
+            <div class="panel-heading"><div><span class="eyebrow">ACCESS MANAGEMENT</span><h2>Authorized staff</h2></div></div>
+            <form id="supervisor-form" class="supervisor-form">
+              <label for="supervisor-email">Google account email</label>
+              <div class="supervisor-form-row">
+                <input id="supervisor-email" type="email" placeholder="name@gmail.com" autocomplete="email" required />
+                <select id="staff-role" aria-label="Staff role">
+                  <option value="supervisor">Supervisor</option>
+                  <option value="manager">Manager</option>
+                </select>
+                <button class="primary-button" id="add-supervisor-button" type="submit">Grant access</button>
+              </div>
+            </form>
+            <p class="staff-message" id="supervisor-message" role="status" aria-live="polite"></p>
+            <div class="table-scroll"><table class="staff-table"><thead><tr><th>Email</th><th>Role</th><th>Access</th><th>Action</th></tr></thead><tbody id="supervisor-list"></tbody></table></div>
+          </section>
+        </section>
+
+        <section class="dashboard-view" id="view-profile" data-view="profile" hidden>
+          <div class="section-intro"><span class="eyebrow">YOUR ACCOUNT</span><h2>Profile &amp; settings</h2><p>Your access comes from your verified Google account and the restaurant’s staff authorization.</p></div>
+          <section class="dashboard-panel profile-panel"><span class="profile-avatar" id="profile-avatar">O</span><div><span class="eyebrow">SIGNED IN AS</span><h2 id="profile-name">Staff member</h2><p id="profile-email"></p><span class="access-chip" id="profile-role">Staff</span></div></section>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

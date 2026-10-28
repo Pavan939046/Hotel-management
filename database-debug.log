@@ -1,0 +1,9 @@
+18:35:10.715 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+18:35:10.863 [main] INFO com.firebase.server.forge.App$ - Listening at 0.0.0.0:9000
+18:35:21.856 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO com.firebase.core.namespace.NamespaceActor - demo-hotel-mangment-system-b4aa8-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 108ms, init: 0ms
+18:35:21.956 [NamespaceSystem-blocking-namespace-operation-dispatcher-6] INFO com.firebase.core.namespace.StateManager - Namespace demo-hotel-mangment-system-b4aa8-default-rtdb status Active to Active
+18:50:45.509 [FirebaseWorkerPool-1-3] WARN com.firebase.core.persistence.backend.dummy.EmulatorMetadataPersistence - Multiple projectIds are not recommended in single project mode. Requested 
+namespace demo-hotel-mangment-system-b4aa8, but the emulator is configured for demo-hotel-mangment-system-b4aa8-default-rtdb. To 
+opt-out of single project mode add/set the singleProjectMode: false property in 
+the firebase.json emulators config. 
+18:50:45.516 [NamespaceSystem-akka.actor.default-dispatcher-18] INFO com.firebase.core.namespace.NamespaceActor - demo-hotel-mangment-system-b4aa8 successfully activated FBKV (SurveyIdle(0)) wait: 4ms, init: 0ms

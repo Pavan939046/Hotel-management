@@ -1,0 +1,12 @@
+# Local environment files may contain backend credentials.
+.env
+.env.*
+!.env.example
+functions/.secret.local
+node_modules/
+functions/node_modules/
+dist/
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log

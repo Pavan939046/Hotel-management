@@ -1,0 +1,39 @@
+{
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": ["node_modules", ".env", "*.log", "seed.js"]
+    }
+  ],
+  "hosting": {
+    "public": "dist",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": []
+  },
+  "database": {
+    "rules": "database.rules.json"
+  },
+  "emulators": {
+    "auth": {
+      "host": "0.0.0.0",
+      "port": 9099
+    },
+    "functions": {
+      "host": "0.0.0.0",
+      "port": 5001
+    },
+    "database": {
+      "host": "0.0.0.0",
+      "port": 9000
+    },
+    "hosting": {
+      "port": 5000
+    },
+    "ui": {
+      "enabled": true,
+      "port": 4000
+    },
+    "singleProjectMode": true
+  }
+}
